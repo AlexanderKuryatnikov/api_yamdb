@@ -92,6 +92,14 @@ SIMPLE_JWT = {
     'AUTH_HEADER_TYPES': ('Bearer',),
 }
 
+
+# Custom User Model
+
+AUTH_USER_MODEL = 'reviews.CustomUser'
+
+
+# Internationalization
+
 LANGUAGE_CODE = 'en-us'
 
 TIME_ZONE = 'UTC'
