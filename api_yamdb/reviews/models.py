@@ -13,6 +13,7 @@ class CustomUser(AbstractUser):
     role = models.CharField(
         choices=USER_ROLES,
         default='user',
+        max_length=200,
     )
 
 
@@ -35,7 +36,8 @@ class Title(models.Model):
     category = models.ForeignKey(
         Category,
         on_delete=models.SET_NULL,
-        related_name='titles'
+        related_name='titles',
+        null=True
     )
     genre = models.ManyToManyField(
         Genre,
