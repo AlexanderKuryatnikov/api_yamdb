@@ -13,7 +13,7 @@ class CustomUser(AbstractUser):
     role = models.CharField(
         choices=USER_ROLES,
         default='user',
-        max_length=200,
+        max_length=10,
     )
 
 
