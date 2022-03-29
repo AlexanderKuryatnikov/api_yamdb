@@ -2,6 +2,8 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
+from .validators import validate_nums
+
 
 class CustomUser(AbstractUser):
     USER_ROLES = (
@@ -48,3 +50,24 @@ class Title(models.Model):
 class GenreTitle(models.Model):
     genre = models.ForeignKey(Genre, on_delete=models.CASCADE)
     title = models.ForeignKey(Title, on_delete=models.CASCADE)
+
+
+class Review(models.Model):
+    title_id = models.ForeignKey(
+        Title,
+        on_delete=models.CASCADE,
+        related_name='titles_id'
+    )
+    text = models.TextField()
+    author = models.ForeignKey(
+        CustomUser, on_delete=models.CASCADE, related_name='author')
+    score = models.PositiveSmallIntegerField(validators=[validate_nums])
+    pub_date = models.DateTimeField('Дата отзыва', auto_now_add=True)
+
+    def __str__(self):
+        return self.text
+
+
+class Comments(models.Model):
+    # todo допишу
+    pass
