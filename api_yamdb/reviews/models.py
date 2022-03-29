@@ -2,7 +2,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
-User = get_user_model()
+# User = get_user_model()
 
 
 class CustomUser(AbstractUser):
@@ -15,6 +15,7 @@ class CustomUser(AbstractUser):
     role = models.CharField(
         choices=USER_ROLES,
         default='user',
+        max_length=200,
     )
 
 
@@ -34,7 +35,8 @@ class Title(models.Model):
     category = models.ForeignKey(
         Category,
         on_delete=models.SET_NULL,
-        related_name='titles'
+        related_name='titles',
+        null=True
     )
     genre = models.ManyToManyField(
         Genre,

@@ -95,7 +95,7 @@ SIMPLE_JWT = {
 
 # Custom User Model
 
-AUTH_USER_MODEL = 'reviews.User'
+AUTH_USER_MODEL = 'reviews.CustomUser'
 
 
 # Internationalization
