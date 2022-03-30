@@ -5,15 +5,17 @@ from rest_framework_simplejwt.views import (
     TokenRefreshView,
 )
 
-#router = routers.DefaultRouter()
+from .views import CategoryViewSet
+
+router = routers.DefaultRouter()
 #router.register(r'titles/(?P<title_id>\d+)/reviews',
                 #ReviewsViewSet, basename='reviews')
 
-
+router.register('categories', CategoryViewSet, basename='category')
 
 
 
 urlpatterns = [
-    # path('v1/', include(router.urls))
+    path('', include(router.urls)),
     path('token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
 ]

@@ -1,6 +1,9 @@
 from django.contrib import admin
 from django.urls import path, include
 from django.views.generic import TemplateView
+from rest_framework_simplejwt.views import (
+    TokenObtainPairView,
+)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -10,7 +13,5 @@ urlpatterns = [
         TemplateView.as_view(template_name='redoc.html'),
         name='redoc'
     ),
-    # JWT будут вместо auth/users как в теории api/vi/users и так далее
-    path('api/v1/', include('djoser.urls')),
-    path('api/v1/', include('djoser.urls.jwt')),
+    path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
 ]
