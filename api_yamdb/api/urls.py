@@ -1,6 +1,9 @@
 from django.urls import include, path
 from rest_framework import routers
-
+from rest_framework_simplejwt.views import (
+    TokenObtainPairView,
+    TokenRefreshView,
+)
 
 #router = routers.DefaultRouter()
 #router.register(r'titles/(?P<title_id>\d+)/reviews',
@@ -10,6 +13,7 @@ from rest_framework import routers
 
 
 
-#urlpatterns = [
-    #path('v1/', include(router.urls))
-#]
+urlpatterns = [
+    # path('v1/', include(router.urls))
+    path('token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+]

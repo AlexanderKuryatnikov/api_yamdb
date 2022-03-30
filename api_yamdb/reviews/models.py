@@ -20,7 +20,7 @@ class CustomUser(AbstractUser):
     )
 
 
-User = get_user_model()
+# User = get_user_model()
 
 
 class Genre(models.Model):
@@ -44,7 +44,8 @@ class Title(models.Model):
     )
     genre = models.ManyToManyField(
         Genre,
-        related_name='titles'
+        related_name='titles',
+        through='GenreTitle',
     )
 
 
@@ -53,22 +54,22 @@ class GenreTitle(models.Model):
     title = models.ForeignKey(Title, on_delete=models.CASCADE)
 
 
-class Review(models.Model):
-    title_id = models.ForeignKey(
-        Title,
-        on_delete=models.CASCADE,
-        related_name='titles_id'
-    )
-    text = models.TextField()
-    author = models.ForeignKey(
-        CustomUser, on_delete=models.CASCADE, related_name='author')
-    score = models.PositiveSmallIntegerField(validators=[validate_nums])
-    pub_date = models.DateTimeField('Дата отзыва', auto_now_add=True)
-
-    def __str__(self):
-        return self.text
-
-
-class Comments(models.Model):
-    # todo допишу
-    pass
+# class Review(models.Model):
+#     title_id = models.ForeignKey(
+#         Title,
+#         on_delete=models.CASCADE,
+#         related_name='titles_id'
+#     )
+#     text = models.TextField()
+#     author = models.ForeignKey(
+#         CustomUser, on_delete=models.CASCADE, related_name='author')
+#     score = models.PositiveSmallIntegerField(validators=[validate_nums])
+#     pub_date = models.DateTimeField('Дата отзыва', auto_now_add=True)
+#
+#     def __str__(self):
+#         return self.text
+#
+#
+# class Comments(models.Model):
+#     # todo допишу
+#     pass
