@@ -11,6 +11,7 @@ class CustomUser(AbstractUser):
         ('moderator', 'Moderator'),
         ('admin', 'Admin')
     )
+    email = models.EmailField()
     bio = models.TextField(blank=True)
     role = models.CharField(
         choices=USER_ROLES,
