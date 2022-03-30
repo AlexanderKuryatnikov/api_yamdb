@@ -2,7 +2,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
-from .validators import validate_nums
+from .validators import validate_nums, validate_year
 
 
 class CustomUser(AbstractUser):
@@ -28,18 +28,20 @@ User = get_user_model()
 
 
 class Genre(models.Model):
-    Name = models.CharField(max_length=200)
+    name = models.CharField(max_length=200)
     slug = models.SlugField(unique=True)
 
 
 class Category(models.Model):
-    Name = models.CharField(max_length=200)
+    name = models.CharField(max_length=200)
     slug = models.SlugField(unique=True)
 
 
 class Title(models.Model):
     name = models.CharField(max_length=200)
-    year = models.IntegerField()  # todo добавить валидатор года
+    year = models.IntegerField(
+        validators=[validate_year]
+    )
     category = models.ForeignKey(
         Category,
         on_delete=models.SET_NULL,
@@ -48,7 +50,8 @@ class Title(models.Model):
     )
     genre = models.ManyToManyField(
         Genre,
-        related_name='titles'
+        related_name='titles',
+        through='GenreTitle',
     )
 
 
@@ -61,11 +64,11 @@ class Review(models.Model):
     title_id = models.ForeignKey(
         Title,
         on_delete=models.CASCADE,
-        related_name='titles_id'
+        related_name='reviews'
     )
     text = models.TextField()
     author = models.ForeignKey(
-        CustomUser, on_delete=models.CASCADE, related_name='author')
+        User, on_delete=models.CASCADE, related_name='reviews')
     score = models.PositiveSmallIntegerField(validators=[validate_nums])
     pub_date = models.DateTimeField('Дата отзыва', auto_now_add=True)
 
@@ -74,5 +77,12 @@ class Review(models.Model):
 
 
 class Comments(models.Model):
-    # todo допишу
-    pass
+    review_id = models.ForeignKey(
+        Review, on_delete=models.CASCADE, related_name='comments')
+    text = models.TextField()
+    author = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name='comments')
+    pub_date = models.DateTimeField('Дата комментария', auto_now_add=True)
+
+    def __str__(self):
+        return self.text
