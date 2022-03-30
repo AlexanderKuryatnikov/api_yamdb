@@ -19,6 +19,10 @@ class CustomUser(AbstractUser):
         max_length=10,
     )
 
+    def save(self, *args, **kwargs):
+        self.is_staff = self.is_superuser or self.role == 'admin'
+        super(CustomUser, self).save(*args, **kwargs)
+
 
 User = get_user_model()
 
