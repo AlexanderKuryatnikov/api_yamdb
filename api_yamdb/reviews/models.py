@@ -4,8 +4,6 @@ from django.db import models
 
 from .validators import validate_nums
 
-# User = get_user_model()
-
 
 class CustomUser(AbstractUser):
     USER_ROLES = (
@@ -13,12 +11,16 @@ class CustomUser(AbstractUser):
         ('moderator', 'Moderator'),
         ('admin', 'Admin')
     )
+    email = models.EmailField()
     bio = models.TextField(blank=True)
     role = models.CharField(
         choices=USER_ROLES,
         default='user',
-        max_length=200,
+        max_length=10,
     )
+
+
+User = get_user_model()
 
 
 class Genre(models.Model):
@@ -53,7 +55,7 @@ class GenreTitle(models.Model):
 
 class Review(models.Model):
     title_id = models.ForeignKey(
-        Title, 
+        Title,
         on_delete=models.CASCADE,
         related_name='titles_id'
     )
