@@ -24,7 +24,8 @@ class CategoryViewSet(viewsets.ModelViewSet):
 class ReviewViewSet(viewsets.ModelViewSet):
     serializer_class = ReviewSerializer
     pagination_class = LimitOffsetPagination
-    permission_classes = (AuthorOrReadOnly,)
+    # в конце поменять на правильный пермишен
+    permission_classes = (permissions.AllowAny,)
 
     def get_queryset(self):
         title_id = self.kwargs.get('title_id')
@@ -33,12 +34,14 @@ class ReviewViewSet(viewsets.ModelViewSet):
     
     def perform_create(self, serializer):
         title_id = self.kwargs.get('title_id')
-        serializer.save(author=self.request.user, title_id=title_id)
+        title = get_object_or_404(Title, pk=title_id)
+        serializer.save(author=self.request.user, title_id=title)
 
 
 class CommentsViewSet(viewsets.ModelViewSet):
     serializer_class = CommentsSerializer
     pagination_class = LimitOffsetPagination
+    # в конце поменять на правильный пермишен
     permission_classes = (AuthorOrReadOnly,)
 
     def get_queryset(self):
