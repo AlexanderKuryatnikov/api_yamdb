@@ -1,8 +1,9 @@
 from django.contrib.auth import get_user_model
+from django.contrib.auth.validators import UnicodeUsernameValidator
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
-from .validators import validate_nums, validate_year
+from .validators import validate_nums, validate_username, validate_year
 
 
 class CustomUser(AbstractUser):
@@ -11,12 +12,21 @@ class CustomUser(AbstractUser):
         ('moderator', 'Moderator'),
         ('admin', 'Admin')
     )
-    email = models.EmailField()
+    email = models.EmailField(unique=True)
+    username = models.CharField(
+        max_length=150,
+        unique=True,
+        validators=[validate_username, UnicodeUsernameValidator],
+    )
     bio = models.TextField(blank=True)
     role = models.CharField(
         choices=USER_ROLES,
         default='user',
         max_length=10,
+    )
+    confirmation_code = models.CharField(
+        blank=True,
+        max_length=50,
     )
 
     def save(self, *args, **kwargs):
