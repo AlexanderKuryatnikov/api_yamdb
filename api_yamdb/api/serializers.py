@@ -26,11 +26,11 @@ class CommentsSerializer(serializers.ModelSerializer):
     author = serializers.SlugRelatedField(
         read_only=True, slug_field='username'
     )
+
     class Meta:
         fields = ('id', 'text', 'author', 'pub_date')
         model = Comments
         read_only_fields = ('pub_date',)
-
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -38,4 +38,3 @@ class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         exclude = ('id',)
         model = Category
-
