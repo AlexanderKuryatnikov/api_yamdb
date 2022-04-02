@@ -63,6 +63,8 @@ class Title(models.Model):
         related_name='titles',
         through='GenreTitle',
     )
+    #возможно  судя по Redoc надо description
+
 
 
 class GenreTitle(models.Model):
@@ -81,6 +83,14 @@ class Review(models.Model):
         User, on_delete=models.CASCADE, related_name='reviews')
     score = models.PositiveSmallIntegerField(validators=[validate_nums])
     pub_date = models.DateTimeField('Дата отзыва', auto_now_add=True)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=['author', 'title_id'],
+                name='unique_author_title_id'
+            )
+        ]
 
     def __str__(self):
         return self.text

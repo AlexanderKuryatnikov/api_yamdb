@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 
-from .models import CustomUser
+from .models import CustomUser, Title, Category
 
 
 class CustomUserAdmin(UserAdmin):
@@ -42,4 +42,13 @@ class CustomUserAdmin(UserAdmin):
         return request.user.is_staff
 
 
+class TitleAdmin(admin.ModelAdmin):
+    list_display = ('name', 'year', 'genre', 'category')
+
+
+class CategoryAdmin(admin.ModelAdmin):
+    list_display = ('name',)
+
 admin.site.register(CustomUser, CustomUserAdmin)
+admin.site.register(Title)
+admin.site.register(Category)
