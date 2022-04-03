@@ -6,11 +6,14 @@ from .views import (
     CategoryViewSet,
     ConfirmationCodeObtainView,
     ReviewViewSet,
-    CommentsViewSet
+    CommentsViewSet,
+    UserSelfView,
+    UserViewSet,
 )
 
 
 router = routers.DefaultRouter()
+router.register('users', UserViewSet, basename='user')
 router.register(r'titles/(?P<title_id>\d+)/reviews',
                 ReviewViewSet, basename='reviews')
 router.register(
@@ -20,7 +23,6 @@ router.register('categories', CategoryViewSet, basename='category')
 
 
 urlpatterns = [
-    path('', include(router.urls)),
     path(
         'v1/auth/signup/',
         ConfirmationCodeObtainView.as_view(),
@@ -31,4 +33,10 @@ urlpatterns = [
         AccessTokenObtainView.as_view(),
         name='token_obtain'
     ),
+    path(
+        'v1/users/me/',
+        UserSelfView.as_view(),
+        name='user-me'
+    ),
+    path('v1/', include(router.urls)),
 ]
