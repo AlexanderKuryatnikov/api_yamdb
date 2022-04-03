@@ -19,7 +19,6 @@ from .views import (
     GenreViewSet,
 )
 
-
 router = routers.DefaultRouter()
 router.register('users', UserViewSet, basename='user')
 router.register(r'titles/(?P<title_id>\d+)/reviews',

@@ -128,7 +128,6 @@ class TitleViewSet(viewsets.ModelViewSet):
 class ReviewViewSet(viewsets.ModelViewSet):
     serializer_class = ReviewSerializer
     pagination_class = LimitOffsetPagination
-    # в конце поменять на правильный пермишен
     permission_classes = (AuthorModeratorAdminOrReadOnly,)
 
     def get_queryset(self):
@@ -145,7 +144,6 @@ class ReviewViewSet(viewsets.ModelViewSet):
 class CommentsViewSet(viewsets.ModelViewSet):
     serializer_class = CommentsSerializer
     pagination_class = LimitOffsetPagination
-    # в конце поменять на правильный пермишен
     permission_classes = (AuthorModeratorAdminOrReadOnly,)
 
     def get_queryset(self):

@@ -4,7 +4,7 @@ from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework.validators import UniqueTogetherValidator
 
 from reviews.models import Review, Category, Comments, Title, Genre, User, GenreTitle
-
+from .fields import CurrentTitleDefault
 
 class ConfirmationCodeObtainSerializer(serializers.ModelSerializer):
     confirmation_code = serializers.HiddenField(default='')
@@ -62,7 +62,7 @@ class ReviewSerializer(serializers.ModelSerializer):
         default=serializers.CurrentUserDefault()
     )
     title_id = serializers.HiddenField(
-        default=serializers.CurrentUserDefault())
+        default=CurrentTitleDefault())
 
     class Meta:
         fields = ('id', 'text', 'author', 'score', 'pub_date', 'title_id')
@@ -74,12 +74,6 @@ class ReviewSerializer(serializers.ModelSerializer):
                 fields=('author', 'title_id'),
             )
         ]
-    
-    def validate_title_id(self, value):
-        if self.context.get('request').user == value:
-            raise serializers.ValidationError(
-                'ты уже оставил отзыв, больше ни-ни!')
-        return value
 
 
 class CommentsSerializer(serializers.ModelSerializer):
@@ -88,9 +82,9 @@ class CommentsSerializer(serializers.ModelSerializer):
     )
 
     class Meta:
-        fields = ('id', 'text', 'author', 'pub_date', 'review_id')
+        fields = ('id', 'text', 'author', 'pub_date')
         model = Comments
-        read_only_fields = ('pub_date', 'review_id')
+        read_only_fields = ('pub_date',)
 
 
 class CategorySerializer(serializers.ModelSerializer):
