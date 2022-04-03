@@ -16,7 +16,7 @@ class CustomUser(AbstractUser):
     username = models.CharField(
         max_length=150,
         unique=True,
-        validators=[validate_username, UnicodeUsernameValidator],
+        validators=[validate_username, UnicodeUsernameValidator()],
     )
     bio = models.TextField(blank=True)
     role = models.CharField(
