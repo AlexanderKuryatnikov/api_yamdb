@@ -17,10 +17,7 @@ class AdminOnly(permissions.BasePermission):
         return request.user.is_staff
 
     def has_object_permission(self, request, view, obj):
-        if request.method in permissions.SAFE_METHODS:
-            return True
-        if request.method == "POST":
-            return request.user.is_staff
+        return request.user.is_staff
 
 
 class IsAdminUserOrReadOnly(permissions.BasePermission):
