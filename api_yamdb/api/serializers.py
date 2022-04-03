@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from rest_framework.exceptions import ValidationError, NotFound
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework.validators import UniqueTogetherValidator
 
@@ -25,13 +26,9 @@ class AccessTokenObtainSerializer(TokenObtainPairSerializer):
     def validate(self, data):
         user = User.objects.filter(username=data.get('username')).first()
         if user is None:
-            raise serializers.ValidationError(
-                'User not found'
-            )
+            raise NotFound('User not found')
         if user.confirmation_code != data.get('confirmation_code'):
-            raise serializers.ValidationError(
-                'Invalid confirmation code'
-            )
+            raise ValidationError('Invalid confirmation code')
         token = self.get_token(user).access_token
         return{'token': str(token)}
 

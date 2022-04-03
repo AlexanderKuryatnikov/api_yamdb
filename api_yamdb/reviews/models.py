@@ -18,12 +18,14 @@ class CustomUser(AbstractUser):
         unique=True,
         validators=[validate_username, UnicodeUsernameValidator()],
     )
-    bio = models.TextField(blank=True)
     role = models.CharField(
         choices=USER_ROLES,
         default='user',
         max_length=10,
     )
+    first_name = models.CharField(max_length=150, blank=True)
+    last_name = models.CharField(max_length=150, blank=True)
+    bio = models.TextField(blank=True)
     confirmation_code = models.CharField(
         blank=True,
         max_length=50,
@@ -63,7 +65,7 @@ class Title(models.Model):
         related_name='titles',
         through='GenreTitle',
     )
-    # возможно  судя по Redoc надо description
+    description = models.CharField(max_length=200)
 
 
 class GenreTitle(models.Model):

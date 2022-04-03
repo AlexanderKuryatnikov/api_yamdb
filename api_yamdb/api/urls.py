@@ -16,7 +16,7 @@ from .views import (
     ReviewViewSet,
     CommentsViewSet,
     TitleViewSet,
-    GenreViewSet
+    GenreViewSet,
 )
 
 router = routers.DefaultRouter()
