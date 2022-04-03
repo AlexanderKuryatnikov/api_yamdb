@@ -65,7 +65,7 @@ class Title(models.Model):
         related_name='titles',
         through='GenreTitle',
     )
-    # возможно  судя по Redoc надо description
+    description = models.CharField(max_length=200)
 
 
 class GenreTitle(models.Model):
