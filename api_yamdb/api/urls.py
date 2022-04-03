@@ -1,13 +1,20 @@
 from django.urls import include, path
 from rest_framework import routers
-from rest_framework_simplejwt.views import (
-    TokenObtainPairView,
-    TokenRefreshView,
+
+from .views import (
+    AccessTokenObtainView,
+    CategoryViewSet,
+    ConfirmationCodeObtainView,
+    ReviewViewSet,
+    CommentsViewSet,
+    UserSelfView,
+    UserViewSet,
 )
 
 from .views import CategoryViewSet, ReviewViewSet, CommentsViewSet, TitleViewSet, GenreViewSet
 
 router = routers.DefaultRouter()
+router.register('users', UserViewSet, basename='user')
 router.register(r'titles/(?P<title_id>\d+)/reviews',
                 ReviewViewSet, basename='reviews')
 router.register(
@@ -19,8 +26,21 @@ router.register('titles', TitleViewSet, basename='titles')
 router.register(r'titles/(?P<title_id>\d+)', TitleViewSet, basename='titles')
 
 
-
 urlpatterns = [
-    path('', include(router.urls)),
-    path('token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path(
+        'v1/auth/signup/',
+        ConfirmationCodeObtainView.as_view(),
+        name='get_confirm_code'
+    ),
+    path(
+        'v1/auth/token/',
+        AccessTokenObtainView.as_view(),
+        name='token_obtain'
+    ),
+    path(
+        'v1/users/me/',
+        UserSelfView.as_view(),
+        name='user-me'
+    ),
+    path('v1/', include(router.urls)),
 ]
