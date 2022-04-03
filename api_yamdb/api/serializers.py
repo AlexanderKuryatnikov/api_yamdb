@@ -2,7 +2,7 @@ from rest_framework import serializers
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework.validators import UniqueTogetherValidator
 
-from reviews.models import Review, Category, Comments, Title, Genre, User
+from reviews.models import Review, Category, Comments, Title, Genre, User, GenreTitle
 
 
 class ConfirmationCodeObtainSerializer(serializers.ModelSerializer):
