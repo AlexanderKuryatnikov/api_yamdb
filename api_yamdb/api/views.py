@@ -10,7 +10,7 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework_simplejwt.views import TokenViewBase
 
-from .permissions import AdminOnly, AuthorOrReadOnly
+from .permissions import AdminOnly, AuthorModeratorAdminOrReadOnly
 from .serializers import (
     AccessTokenObtainSerializer,
     CategorySerializer,
@@ -122,7 +122,7 @@ class ReviewViewSet(viewsets.ModelViewSet):
     serializer_class = ReviewSerializer
     pagination_class = LimitOffsetPagination
     # в конце поменять на правильный пермишен
-    permission_classes = (AuthorOrReadOnly,)
+    permission_classes = (AuthorModeratorAdminOrReadOnly,)
 
     def get_queryset(self):
         title_id = self.kwargs.get('title_id')
@@ -139,9 +139,14 @@ class CommentsViewSet(viewsets.ModelViewSet):
     serializer_class = CommentsSerializer
     pagination_class = LimitOffsetPagination
     # в конце поменять на правильный пермишен
-    permission_classes = (AuthorOrReadOnly,)
+    permission_classes = (AuthorModeratorAdminOrReadOnly,)
 
     def get_queryset(self):
         reveiw_id = self.kwargs.get('review_id')
-        review = get_object_or_404(Review, pk=reveiw_id)
-        return review.comments.all()
+        reveiw = get_object_or_404(Review, pk=reveiw_id)
+        return reveiw.comments.all()
+
+    def perform_create(self, serializer):
+        review_id = self.kwargs.get('review_id')
+        review = get_object_or_404(Review, pk=review_id)
+        serializer.save(author=self.request.user, review_id=review)
