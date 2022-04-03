@@ -103,7 +103,7 @@ class CategoryViewSet(viewsets.ModelViewSet):
 
 class GenreViewSet(viewsets.ModelViewSet):
     serializer_class = GenreSerializer
-    queryset = Category.objects.all()
+    queryset = Genre.objects.all()
 
 
 class TitleViewSet(viewsets.ModelViewSet):
