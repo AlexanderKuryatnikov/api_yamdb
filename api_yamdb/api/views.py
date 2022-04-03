@@ -8,7 +8,7 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework_simplejwt.views import TokenViewBase
 
-from .permissions import AdminOnly, AuthorOrReadOnly
+from .permissions import AdminOnly, AuthorModeratorAdminOrReadOnly
 from .serializers import (
     AccessTokenObtainSerializer,
     CategorySerializer,
@@ -100,7 +100,7 @@ class ReviewViewSet(viewsets.ModelViewSet):
     serializer_class = ReviewSerializer
     pagination_class = LimitOffsetPagination
     # в конце поменять на правильный пермишен
-    permission_classes = (AllowAny,)
+    permission_classes = (AuthorModeratorAdminOrReadOnly,)
 
     def get_queryset(self):
         title_id = self.kwargs.get('title_id')
@@ -117,7 +117,7 @@ class CommentsViewSet(viewsets.ModelViewSet):
     serializer_class = CommentsSerializer
     pagination_class = LimitOffsetPagination
     # в конце поменять на правильный пермишен
-    permission_classes = (AuthorOrReadOnly,)
+    permission_classes = (AuthorModeratorAdminOrReadOnly,)
 
     def get_queryset(self):
         reveiw_id = self.kwargs.get('review_id')

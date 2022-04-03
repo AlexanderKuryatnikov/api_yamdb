@@ -75,9 +75,15 @@ class ReviewSerializer(serializers.ModelSerializer):
             UniqueTogetherValidator(
                 queryset=Review.objects.all(),
                 fields=('author', 'title_id'),
-                message=('ты уже оставил отзыв, больше ни-ни')
             )
         ]
+    
+    def validate_title_id(self, value):
+        if self.context.get('request').user == value:
+            raise serializers.ValidationError(
+                'ты уже оставил отзыв, больше ни-ни!')
+        return value
+
 
 
 class CommentsSerializer(serializers.ModelSerializer):
