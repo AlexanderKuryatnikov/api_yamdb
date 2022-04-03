@@ -11,7 +11,14 @@ from .views import (
     UserViewSet,
 )
 
-from .views import CategoryViewSet, ReviewViewSet, CommentsViewSet, TitleViewSet, GenreViewSet
+from .views import (
+    CategoryViewSet,
+    ReviewViewSet,
+    CommentsViewSet,
+    TitleViewSet,
+    GenreViewSet,
+)
+
 
 router = routers.DefaultRouter()
 router.register('users', UserViewSet, basename='user')
