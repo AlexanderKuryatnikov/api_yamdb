@@ -8,13 +8,14 @@ from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework_simplejwt.views import TokenViewBase
 
-from .permissions import AuthorOrReadOnly
+from .permissions import AdminOnly, AuthorOrReadOnly
 from .serializers import (
     AccessTokenObtainSerializer,
     CategorySerializer,
     ConfirmationCodeObtainSerializer,
     ReviewSerializer,
-    CommentsSerializer
+    CommentsSerializer,
+    UserSerializer,
 )
 from reviews.models import Category, Title, Review, User
 
@@ -65,6 +66,17 @@ class ConfirmationCodeObtainView(generics.CreateAPIView):
 
 class AccessTokenObtainView(TokenViewBase):
     serializer_class = AccessTokenObtainSerializer
+    permission_classes = (AllowAny,)
+
+
+class UserViewSet(viewsets.ModelViewSet):
+    serializer_class = UserSerializer
+    queryset = User.objects.all()
+    permission_classes = (AdminOnly,)
+    lookup_field = 'username'
+    pagination_class = LimitOffsetPagination
+    filter_backends = (SearchFilter,)
+    search_fields = ('username',)
 
 
 class CategoryViewSet(viewsets.ModelViewSet):

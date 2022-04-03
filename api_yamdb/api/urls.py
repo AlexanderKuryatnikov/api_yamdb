@@ -6,11 +6,13 @@ from .views import (
     CategoryViewSet,
     ConfirmationCodeObtainView,
     ReviewViewSet,
-    CommentsViewSet
+    CommentsViewSet,
+    UserViewSet,
 )
 
 
 router = routers.DefaultRouter()
+router.register('users', UserViewSet, basename='user')
 router.register(r'titles/(?P<title_id>\d+)/reviews',
                 ReviewViewSet, basename='reviews')
 router.register(
@@ -20,7 +22,7 @@ router.register('categories', CategoryViewSet, basename='category')
 
 
 urlpatterns = [
-    path('', include(router.urls)),
+    path('v1/', include(router.urls)),
     path(
         'v1/auth/signup/',
         ConfirmationCodeObtainView.as_view(),

@@ -42,6 +42,14 @@ class AccessTokenObtainSerializer(TokenObtainPairSerializer):
         return token
 
 
+class UserSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = User
+        fields = ('username', 'email', 'first_name',
+                  'last_name', 'bio', 'role')
+
+
 class ReviewSerializer(serializers.ModelSerializer):
     author = serializers.SlugRelatedField(
         read_only=True, slug_field='username',
@@ -49,6 +57,7 @@ class ReviewSerializer(serializers.ModelSerializer):
     )
     title_id = serializers.HiddenField(
         default=serializers.CurrentUserDefault())
+
     class Meta:
         fields = ('id', 'text', 'author', 'score', 'pub_date', 'title_id')
         model = Review
@@ -57,9 +66,10 @@ class ReviewSerializer(serializers.ModelSerializer):
             UniqueTogetherValidator(
                 queryset=Review.objects.all(),
                 fields=('author', 'title_id'),
-                message = ('ты уже оставил отзыв, больше ни-ни')
+                message=('ты уже оставил отзыв, больше ни-ни')
             )
         ]
+
 
 class CommentsSerializer(serializers.ModelSerializer):
     author = serializers.SlugRelatedField(
