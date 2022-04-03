@@ -79,7 +79,7 @@ class ReviewViewSet(viewsets.ModelViewSet):
     serializer_class = ReviewSerializer
     pagination_class = LimitOffsetPagination
     # в конце поменять на правильный пермишен
-    permission_classes = (AuthorOrReadOnly,)
+    permission_classes = (AllowAny,)
 
     def get_queryset(self):
         title_id = self.kwargs.get('title_id')
