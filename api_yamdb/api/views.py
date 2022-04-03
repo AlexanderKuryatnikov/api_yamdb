@@ -1,7 +1,6 @@
 from django.core.mail import send_mail
 from django.core.management.utils import get_random_secret_key
 from django.shortcuts import get_object_or_404
-from rest_framework import permissions
 from django.db.models import Avg
 from rest_framework import generics, viewsets, status, mixins
 from rest_framework.filters import SearchFilter
@@ -28,7 +27,7 @@ from .serializers import (
     TitleSerializerWrite,
     GenreSerializer
 )
-from reviews.models import Category, Title, Comments, Review, Genre, User
+from reviews.models import Category, Title, Review, Genre, User
 
 
 class CreateListDeleteViewSet(
