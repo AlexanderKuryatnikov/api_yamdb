@@ -63,8 +63,7 @@ class Title(models.Model):
         related_name='titles',
         through='GenreTitle',
     )
-    #возможно  судя по Redoc надо description
-
+    # возможно  судя по Redoc надо description
 
 
 class GenreTitle(models.Model):
