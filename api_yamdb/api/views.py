@@ -110,6 +110,9 @@ class GenreViewSet(viewsets.ModelViewSet):
     serializer_class = GenreSerializer
     queryset = Genre.objects.all()
     permission_classes = (AdminOrReadOnly,)
+    pagination_class = LimitOffsetPagination
+    filter_backends = (SearchFilter,)
+    search_fields = ('name',)
 
 
 class TitleViewSet(viewsets.ModelViewSet):
