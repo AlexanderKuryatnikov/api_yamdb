@@ -121,5 +121,10 @@ class CommentsViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         reveiw_id = self.kwargs.get('review_id')
-        review = get_object_or_404(Review, pk=reveiw_id)
-        return review.comments.all()
+        reveiw = get_object_or_404(Review, pk=reveiw_id)
+        return reveiw.comments.all()
+
+    def perform_create(self, serializer):
+        review_id = self.kwargs.get('review_id')
+        review = get_object_or_404(Review, pk=review_id)
+        serializer.save(author=self.request.user, review_id=review)
