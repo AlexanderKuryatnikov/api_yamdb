@@ -2,8 +2,9 @@ from django.core.mail import send_mail
 from django.core.management.utils import get_random_secret_key
 from django.shortcuts import get_object_or_404
 from django.db.models import Avg
-from rest_framework import generics, viewsets, status
+from rest_framework import generics, viewsets, status, mixins
 from rest_framework.filters import SearchFilter
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
@@ -27,6 +28,15 @@ from .serializers import (
     GenreSerializer
 )
 from reviews.models import Category, Title, Review, Genre, User
+
+
+class CreateListDeleteViewSet(
+    mixins.CreateModelMixin,
+    mixins.DestroyModelMixin,
+    mixins.ListModelMixin,
+    viewsets.GenericViewSet
+):
+    pass
 
 
 class ConfirmationCodeObtainView(generics.CreateAPIView):
@@ -96,22 +106,29 @@ class UserViewSet(viewsets.ModelViewSet):
     search_fields = ('username',)
 
 
-class CategoryViewSet(viewsets.ModelViewSet):
+class CategoryViewSet(CreateListDeleteViewSet):
     serializer_class = CategorySerializer
     queryset = Category.objects.all()
     permission_classes = (AdminOrReadOnly,)
     pagination_class = LimitOffsetPagination
-    filter_backends = (SearchFilter, )
-    search_fields = ('name', )
+    filter_backends = (SearchFilter,)
+    search_fields = ('name',)
+    lookup_field = 'slug'
 
 
-class GenreViewSet(viewsets.ModelViewSet):
+class GenreViewSet(CreateListDeleteViewSet):
     serializer_class = GenreSerializer
     queryset = Genre.objects.all()
     permission_classes = (AdminOrReadOnly,)
+    pagination_class = LimitOffsetPagination
+    filter_backends = (SearchFilter,)
+    search_fields = ('name',)
+    lookup_field = 'slug'
 
 
 class TitleViewSet(viewsets.ModelViewSet):
+    filter_backends = (DjangoFilterBackend,)
+    filterset_fields = ('genre', 'category', 'name', 'year')
     queryset = Title.objects.annotate(
         rating=Avg('reviews__score')
     ).all()
