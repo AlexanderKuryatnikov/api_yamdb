@@ -1,17 +1,52 @@
-from django.contrib import admin
-from django.urls import path, include
-from django.views.generic import TemplateView
-from rest_framework_simplejwt.views import (
-    TokenObtainPairView,
+from django.urls import include, path
+from rest_framework import routers
+
+from .views import (
+    AccessTokenObtainView,
+    CategoryViewSet,
+    ConfirmationCodeObtainView,
+    ReviewViewSet,
+    CommentsViewSet,
+    UserSelfView,
+    UserViewSet,
 )
 
+from .views import (
+    CategoryViewSet,
+    ReviewViewSet,
+    CommentsViewSet,
+    TitleViewSet,
+    GenreViewSet,
+)
+
+router = routers.DefaultRouter()
+router.register('users', UserViewSet, basename='user')
+router.register(r'titles/(?P<title_id>\d+)/reviews',
+                ReviewViewSet, basename='reviews')
+router.register(
+    r'titles/(?P<title_id>\d+)/reviews/(?P<review_id>\d+)/comments',
+    CommentsViewSet, basename='comments')
+router.register('categories', CategoryViewSet, basename='category')
+router.register('genres', GenreViewSet, basename='genres')
+router.register('titles', TitleViewSet, basename='titles')
+router.register(r'titles/(?P<title_id>\d+)', TitleViewSet, basename='titles')
+
+
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('api/', include('api.urls')),
     path(
-        'redoc/',
-        TemplateView.as_view(template_name='redoc.html'),
-        name='redoc'
+        'v1/auth/signup/',
+        ConfirmationCodeObtainView.as_view(),
+        name='get_confirm_code'
     ),
-    path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path(
+        'v1/auth/token/',
+        AccessTokenObtainView.as_view(),
+        name='token_obtain'
+    ),
+    path(
+        'v1/users/me/',
+        UserSelfView.as_view(),
+        name='user-me'
+    ),
+    path('v1/', include(router.urls)),
 ]
