@@ -7,6 +7,7 @@ from .views import (
     ConfirmationCodeObtainView,
     ReviewViewSet,
     CommentsViewSet,
+    UserSelfView,
     UserViewSet,
 )
 
@@ -22,7 +23,6 @@ router.register('categories', CategoryViewSet, basename='category')
 
 
 urlpatterns = [
-    path('v1/', include(router.urls)),
     path(
         'v1/auth/signup/',
         ConfirmationCodeObtainView.as_view(),
@@ -33,4 +33,10 @@ urlpatterns = [
         AccessTokenObtainView.as_view(),
         name='token_obtain'
     ),
+    path(
+        'v1/users/me/',
+        UserSelfView.as_view(),
+        name='user-me'
+    ),
+    path('v1/', include(router.urls)),
 ]

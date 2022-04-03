@@ -4,7 +4,7 @@ from django.shortcuts import get_object_or_404
 from rest_framework import generics, viewsets, status
 from rest_framework.filters import SearchFilter
 from rest_framework.pagination import LimitOffsetPagination
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework_simplejwt.views import TokenViewBase
 
@@ -15,6 +15,7 @@ from .serializers import (
     ConfirmationCodeObtainSerializer,
     ReviewSerializer,
     CommentsSerializer,
+    UserSelfSerializer,
     UserSerializer,
 )
 from reviews.models import Category, Title, Review, User
@@ -67,6 +68,14 @@ class ConfirmationCodeObtainView(generics.CreateAPIView):
 class AccessTokenObtainView(TokenViewBase):
     serializer_class = AccessTokenObtainSerializer
     permission_classes = (AllowAny,)
+
+
+class UserSelfView(generics.RetrieveUpdateAPIView):
+    serializer_class = UserSelfSerializer
+    permission_classes = (IsAuthenticated,)
+
+    def get_object(self):
+        return self.request.user
 
 
 class UserViewSet(viewsets.ModelViewSet):
