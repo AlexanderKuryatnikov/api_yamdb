@@ -2,7 +2,7 @@ from rest_framework import serializers
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework.validators import UniqueTogetherValidator
 
-from reviews.models import Review, Category, Comments, User
+from reviews.models import Review, Category, Comments, Title, Genre, User
 
 
 class ConfirmationCodeObtainSerializer(serializers.ModelSerializer):
@@ -96,3 +96,39 @@ class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         exclude = ('id',)
         model = Category
+
+
+class GenreSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        exclude = ('id',)
+        model = Genre
+
+
+class TitleSerializerRead(serializers.ModelSerializer):
+    category = CategorySerializer(read_only=True)
+    genre = GenreSerializer(
+        read_only=True,
+        many=True
+    )
+    rating = serializers.IntegerField(read_only=True)
+
+    class Meta:
+        fields = '__all__'
+        model = Title
+
+
+class TitleSerializerWrite(serializers.ModelSerializer):
+    category = serializers.SlugRelatedField(
+        queryset=Category.objects.all(),
+        slug_field='slug'
+    )
+    genre = serializers.SlugRelatedField(
+        queryset=Genre.objects.all(),
+        slug_field='slug',
+        many=True
+    )
+
+    class Meta:
+        fields = '__all__'
+        model = Title
