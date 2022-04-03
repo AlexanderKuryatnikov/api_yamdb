@@ -49,6 +49,7 @@ class TitleAdmin(admin.ModelAdmin):
 class CategoryAdmin(admin.ModelAdmin):
     list_display = ('name',)
 
+
 admin.site.register(CustomUser, CustomUserAdmin)
 admin.site.register(Title)
 admin.site.register(Category)
