@@ -1,6 +1,8 @@
 from django.core.mail import send_mail
 from django.core.management.utils import get_random_secret_key
 from django.shortcuts import get_object_or_404
+from rest_framework import permissions
+from django.db.models import Avg
 from rest_framework import generics, viewsets, status
 from rest_framework.filters import SearchFilter
 from rest_framework.pagination import LimitOffsetPagination
@@ -8,17 +10,20 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework_simplejwt.views import TokenViewBase
 
-from .permissions import AdminOnly, AuthorOrReadOnly
+from .permissions import AdminOnly, AuthorModeratorAdminOrReadOnly
 from .serializers import (
     AccessTokenObtainSerializer,
     CategorySerializer,
     ConfirmationCodeObtainSerializer,
-    ReviewSerializer,
+    ReviewSerializer, 
     CommentsSerializer,
     UserSelfSerializer,
     UserSerializer,
+    TitleSerializerRead,
+    TitleSerializerWrite,
+    GenreSerializer
 )
-from reviews.models import Category, Title, Review, User
+from reviews.models import Category, Title, Comments, Review, Genre, User
 
 
 class ConfirmationCodeObtainView(generics.CreateAPIView):
@@ -96,11 +101,28 @@ class CategoryViewSet(viewsets.ModelViewSet):
     search_fields = ('name', )
 
 
+class GenreViewSet(viewsets.ModelViewSet):
+    serializer_class = GenreSerializer
+    queryset = Genre.objects.all()
+
+
+class TitleViewSet(viewsets.ModelViewSet):
+    queryset = Title.objects.annotate(
+        rating=Avg('reviews__score')
+    ).all()
+
+    def get_serializer_class(self):
+        if self.request.method == 'GET':
+            return TitleSerializerRead
+        else:
+            return TitleSerializerWrite
+
+
 class ReviewViewSet(viewsets.ModelViewSet):
     serializer_class = ReviewSerializer
     pagination_class = LimitOffsetPagination
     # в конце поменять на правильный пермишен
-    permission_classes = (AuthorOrReadOnly,)
+    permission_classes = (AuthorModeratorAdminOrReadOnly,)
 
     def get_queryset(self):
         title_id = self.kwargs.get('title_id')
@@ -117,9 +139,14 @@ class CommentsViewSet(viewsets.ModelViewSet):
     serializer_class = CommentsSerializer
     pagination_class = LimitOffsetPagination
     # в конце поменять на правильный пермишен
-    permission_classes = (AuthorOrReadOnly,)
+    permission_classes = (AuthorModeratorAdminOrReadOnly,)
 
     def get_queryset(self):
         reveiw_id = self.kwargs.get('review_id')
-        review = get_object_or_404(Review, pk=reveiw_id)
-        return review.comments.all()
+        reveiw = get_object_or_404(Review, pk=reveiw_id)
+        return reveiw.comments.all()
+
+    def perform_create(self, serializer):
+        review_id = self.kwargs.get('review_id')
+        review = get_object_or_404(Review, pk=review_id)
+        serializer.save(author=self.request.user, review_id=review)

@@ -11,6 +11,7 @@ from .views import (
     UserViewSet,
 )
 
+from .views import CategoryViewSet, ReviewViewSet, CommentsViewSet, TitleViewSet, GenreViewSet
 
 router = routers.DefaultRouter()
 router.register('users', UserViewSet, basename='user')
@@ -20,6 +21,9 @@ router.register(
     r'titles/(?P<title_id>\d+)/reviews/(?P<review_id>\d+)/comments',
     CommentsViewSet, basename='comments')
 router.register('categories', CategoryViewSet, basename='category')
+router.register('genres', GenreViewSet, basename='genres')
+router.register('titles', TitleViewSet, basename='titles')
+router.register(r'titles/(?P<title_id>\d+)', TitleViewSet, basename='titles')
 
 
 urlpatterns = [
