@@ -110,6 +110,9 @@ class GenreViewSet(viewsets.ModelViewSet):
     serializer_class = GenreSerializer
     queryset = Genre.objects.all()
     permission_classes = (AdminOrReadOnly,)
+    pagination_class = LimitOffsetPagination
+    filter_backends = (SearchFilter,)
+    search_fields = ('name',)
 
 
 class TitleViewSet(viewsets.ModelViewSet):
@@ -117,6 +120,9 @@ class TitleViewSet(viewsets.ModelViewSet):
         rating=Avg('reviews__score')
     ).all()
     permission_classes = (AdminOrReadOnly,)
+    pagination_class = LimitOffsetPagination
+    filter_backends = (SearchFilter,)
+    # search_fields = ('genre__slug',)
 
     def get_serializer_class(self):
         if self.request.method == 'GET':
