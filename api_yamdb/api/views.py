@@ -1,5 +1,6 @@
 from django.shortcuts import get_object_or_404
 from rest_framework import permissions
+from django.db.models import Avg
 from rest_framework import viewsets
 from rest_framework.filters import SearchFilter
 from rest_framework.pagination import LimitOffsetPagination
@@ -8,7 +9,9 @@ from .permissions import AuthorOrReadOnly
 from .serializers import (
     CategorySerializer, 
     ReviewSerializer, 
-    CommentsSerializer
+    CommentsSerializer,
+    TitleSerializerRead,
+    TitleSerializerWrite,
 )
 from reviews.models import Category, Title, Comments, Review
 
@@ -19,6 +22,18 @@ class CategoryViewSet(viewsets.ModelViewSet):
     pagination_class = LimitOffsetPagination
     filter_backends = (SearchFilter, )
     search_fields = ('name', )
+
+
+class TitleViewSet(viewsets.ModelViewSet):
+    queryset = Title.objects.annotate(
+        rating=Avg('reviews__score')
+    ).all()
+
+    def get_serializer_class(self):
+        if self.request.method == 'GET':
+            return TitleSerializerRead
+        else:
+            return TitleSerializerWrite
 
 
 class ReviewViewSet(viewsets.ModelViewSet):
