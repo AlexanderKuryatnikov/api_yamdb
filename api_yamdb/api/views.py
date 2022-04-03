@@ -1,6 +1,8 @@
 from django.core.mail import send_mail
 from django.core.management.utils import get_random_secret_key
 from django.shortcuts import get_object_or_404
+from rest_framework import permissions
+from django.db.models import Avg
 from rest_framework import generics, viewsets, status
 from rest_framework.filters import SearchFilter
 from rest_framework.pagination import LimitOffsetPagination
@@ -13,12 +15,15 @@ from .serializers import (
     AccessTokenObtainSerializer,
     CategorySerializer,
     ConfirmationCodeObtainSerializer,
-    ReviewSerializer,
+    ReviewSerializer, 
     CommentsSerializer,
     UserSelfSerializer,
     UserSerializer,
+    TitleSerializerRead,
+    TitleSerializerWrite,
+    GenreSerializer
 )
-from reviews.models import Category, Title, Review, User
+from reviews.models import Category, Title, Comments, Review, Genre, User
 
 
 class ConfirmationCodeObtainView(generics.CreateAPIView):
@@ -94,6 +99,23 @@ class CategoryViewSet(viewsets.ModelViewSet):
     pagination_class = LimitOffsetPagination
     filter_backends = (SearchFilter, )
     search_fields = ('name', )
+
+
+class GenreViewSet(viewsets.ModelViewSet):
+    serializer_class = GenreSerializer
+    queryset = Genre.objects.all()
+
+
+class TitleViewSet(viewsets.ModelViewSet):
+    queryset = Title.objects.annotate(
+        rating=Avg('reviews__score')
+    ).all()
+
+    def get_serializer_class(self):
+        if self.request.method == 'GET':
+            return TitleSerializerRead
+        else:
+            return TitleSerializerWrite
 
 
 class ReviewViewSet(viewsets.ModelViewSet):
