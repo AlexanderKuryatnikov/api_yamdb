@@ -12,8 +12,9 @@ from .serializers import (
     CommentsSerializer,
     TitleSerializerRead,
     TitleSerializerWrite,
+    GenreSerializer
 )
-from reviews.models import Category, Title, Comments, Review
+from reviews.models import Category, Title, Comments, Review, Genre
 
 
 class CategoryViewSet(viewsets.ModelViewSet):
@@ -22,6 +23,11 @@ class CategoryViewSet(viewsets.ModelViewSet):
     pagination_class = LimitOffsetPagination
     filter_backends = (SearchFilter, )
     search_fields = ('name', )
+
+
+class GenreViewSet(viewsets.ModelViewSet):
+    serializer_class = GenreSerializer
+    queryset = Category.objects.all()
 
 
 class TitleViewSet(viewsets.ModelViewSet):
