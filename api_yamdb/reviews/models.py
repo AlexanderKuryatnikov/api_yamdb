@@ -6,13 +6,22 @@ from django.db import models
 from .validators import validate_nums, validate_username, validate_year
 
 
+class UserRole:
+    USER = 'user'
+    MODERATOR = 'moderator'
+    ADMIN = 'admin'
+
+
 class CustomUser(AbstractUser):
     USER_ROLES = (
-        ('user', 'User'),
-        ('moderator', 'Moderator'),
-        ('admin', 'Admin')
+        (UserRole.USER, 'User'),
+        (UserRole.MODERATOR, 'Moderator'),
+        (UserRole.ADMIN, 'Admin'),
     )
-    email = models.EmailField(unique=True)
+    email = models.EmailField(
+        max_length=254,
+        unique=True,
+    )
     username = models.CharField(
         max_length=150,
         unique=True,
@@ -20,8 +29,8 @@ class CustomUser(AbstractUser):
     )
     role = models.CharField(
         choices=USER_ROLES,
-        default='user',
-        max_length=10,
+        default=UserRole.USER,
+        max_length=max([len(role[0]) for role in USER_ROLES]),
     )
     first_name = models.CharField(max_length=150, blank=True)
     last_name = models.CharField(max_length=150, blank=True)
@@ -31,8 +40,12 @@ class CustomUser(AbstractUser):
         max_length=50,
     )
 
+    @property
+    def is_moderator(self):
+        return self.role == UserRole.MODERATOR
+
     def save(self, *args, **kwargs):
-        self.is_staff = self.is_superuser or self.role == 'admin'
+        self.is_staff = self.is_superuser or self.role == UserRole.ADMIN
         super(CustomUser, self).save(*args, **kwargs)
 
 
