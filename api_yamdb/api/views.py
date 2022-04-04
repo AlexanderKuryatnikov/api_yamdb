@@ -1,34 +1,24 @@
 from django.core.mail import send_mail
 from django.core.management.utils import get_random_secret_key
-from django.shortcuts import get_object_or_404
 from django.db.models import Avg
-from rest_framework import generics, viewsets, status, mixins
-from rest_framework.filters import SearchFilter
+from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import generics, mixins, status, viewsets
+from rest_framework.filters import SearchFilter
 from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework_simplejwt.views import TokenViewBase
 
-from .permissions import (
-    AdminOnly,
-    AdminOrReadOnly,
-    AuthorModeratorAdminOrReadOnly
-)
-from .serializers import (
-    AccessTokenObtainSerializer,
-    CategorySerializer,
-    ConfirmationCodeObtainSerializer,
-    ReviewSerializer,
-    CommentsSerializer,
-    UserSelfSerializer,
-    UserSerializer,
-    TitleSerializerRead,
-    TitleSerializerWrite,
-    GenreSerializer
-)
-from reviews.models import Category, Title, Review, Genre, User
+from reviews.models import Category, Genre, Review, Title, User
 from .filters import TitleFilter
+from .permissions import (AdminOnly, AdminOrReadOnly,
+                          AuthorModeratorAdminOrReadOnly)
+from .serializers import (AccessTokenObtainSerializer, CategorySerializer,
+                          CommentsSerializer, ConfirmationCodeObtainSerializer,
+                          GenreSerializer, ReviewSerializer,
+                          TitleSerializerRead, TitleSerializerWrite,
+                          UserSelfSerializer, UserSerializer)
 
 
 class CreateListDeleteViewSet(
@@ -129,8 +119,6 @@ class GenreViewSet(CreateListDeleteViewSet):
 
 class TitleViewSet(viewsets.ModelViewSet):
     filter_backends = (DjangoFilterBackend,)
-    # filterset_fields = ('genre', 'category__slug', 'name', 'year')
-    # lookup_expr = 'icontains'
     filterset_class = TitleFilter
     queryset = Title.objects.annotate(
         rating=Avg('reviews__score')
