@@ -28,6 +28,7 @@ from .serializers import (
     GenreSerializer
 )
 from reviews.models import Category, Title, Review, Genre, User
+from .filters import TitleFilter
 
 
 class CreateListDeleteViewSet(
@@ -128,7 +129,9 @@ class GenreViewSet(CreateListDeleteViewSet):
 
 class TitleViewSet(viewsets.ModelViewSet):
     filter_backends = (DjangoFilterBackend,)
-    filterset_fields = ('genre', 'category', 'name', 'year')
+    # filterset_fields = ('genre', 'category__slug', 'name', 'year')
+    # lookup_expr = 'icontains'
+    filterset_class = TitleFilter
     queryset = Title.objects.annotate(
         rating=Avg('reviews__score')
     ).all()
