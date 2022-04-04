@@ -1,10 +1,12 @@
 from rest_framework import serializers
-from rest_framework.exceptions import ValidationError, NotFound
-from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from rest_framework.exceptions import NotFound, ValidationError
 from rest_framework.validators import UniqueTogetherValidator
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
-from reviews.models import Review, Category, Comments, Title, Genre, User, GenreTitle
+from reviews.models import (Category, Comments, Genre, Review,
+                            Title, User)
 from .fields import CurrentTitleDefault
+
 
 class ConfirmationCodeObtainSerializer(serializers.ModelSerializer):
     confirmation_code = serializers.HiddenField(default='')
