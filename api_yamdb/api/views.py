@@ -154,9 +154,9 @@ class CommentsViewSet(viewsets.ModelViewSet):
     permission_classes = (AuthorModeratorAdminOrReadOnly,)
 
     def get_queryset(self):
-        reveiw_id = self.kwargs.get('review_id')
-        reveiw = get_object_or_404(Review, pk=reveiw_id)
-        return reveiw.comments.all()
+        review_id = self.kwargs.get('review_id')
+        review = get_object_or_404(Review, pk=review_id)
+        return review.comments.all()
 
     def perform_create(self, serializer):
         review_id = self.kwargs.get('review_id')
