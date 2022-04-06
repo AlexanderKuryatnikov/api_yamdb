@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import send_mail
 from django.core.management.utils import get_random_secret_key
@@ -102,7 +103,7 @@ def confirmation_code_obtain_view_v2(request):
     send_mail(
         'Cofirmation Code',
         f'{confirmation_code}',
-        'yamdb@example.com',
+        settings.EMAIL,
         [f'{email}'],
         fail_silently=False,
     )
