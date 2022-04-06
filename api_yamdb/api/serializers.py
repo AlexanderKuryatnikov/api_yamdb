@@ -1,8 +1,10 @@
+from django.contrib.auth.validators import UnicodeUsernameValidator
 from rest_framework import serializers
 from rest_framework.exceptions import NotFound, ValidationError
 from rest_framework.validators import UniqueTogetherValidator
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
+from reviews.validators import validate_username
 from reviews.models import (Category, Comments, Genre, Review,
                             Title, User)
 from .fields import CurrentTitleDefault
@@ -14,6 +16,21 @@ class ConfirmationCodeObtainSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ('email', 'username', 'confirmation_code')
+
+
+class SignUpSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = User
+        fields = ('email', 'username')
+
+
+class ConfirmationCodeObtainSerializer_v2(serializers.Serializer):
+    email = serializers.EmailField(max_length=254)
+    username = serializers.CharField(
+        max_length=150,
+        validators=[validate_username, UnicodeUsernameValidator()]
+    )
 
 
 class AccessTokenObtainSerializer(TokenObtainPairSerializer):
@@ -33,6 +50,29 @@ class AccessTokenObtainSerializer(TokenObtainPairSerializer):
             raise ValidationError('Invalid confirmation code')
         token = self.get_token(user).access_token
         return{'token': str(token)}
+
+    @classmethod
+    def get_token(cls, user):
+        token = super().get_token(user)
+        token['username'] = user.username
+        return token
+
+
+class AccessTokenObtainSerializer_v2(TokenObtainPairSerializer):
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.fields[self.username_field] = serializers.CharField()
+        self.fields['confirmation_code'] = serializers.CharField()
+        self.fields['password'].required = False
+
+    def validate(self, data):
+        user = User.objects.filter(username=data.get('username')).first()
+        if user is None:
+            raise NotFound('Пользователь не найден')
+        token = self.get_token(user).access_token
+        return {'token': str(token)}
 
     @classmethod
     def get_token(cls, user):

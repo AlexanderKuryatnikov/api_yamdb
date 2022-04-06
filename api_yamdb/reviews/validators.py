@@ -19,4 +19,4 @@ def validate_year(value):
 
 def validate_username(username):
     if username == 'me':
-        raise ValidationError('Username "me" is not allowed')
+        raise ValidationError('Использовать имя "me" запрещено')
