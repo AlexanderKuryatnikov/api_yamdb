@@ -69,8 +69,7 @@ class ReviewSerializer(serializers.ModelSerializer):
         read_only=True, slug_field='username',
         default=serializers.CurrentUserDefault()
     )
-    title = serializers.HiddenField(
-        default=CurrentTitleDefault())
+    title = serializers.HiddenField(default=True)
 
     class Meta:
         fields = ('id', 'text', 'author', 'score', 'pub_date', 'title')
@@ -82,6 +81,9 @@ class ReviewSerializer(serializers.ModelSerializer):
                 fields=('author', 'title'),
             )
         ]
+
+    def validate_title(self, value):
+        return self.context['request'].parser_context['kwargs']['title_id']
 
 
 class CommentsSerializer(serializers.ModelSerializer):
@@ -95,20 +97,24 @@ class CommentsSerializer(serializers.ModelSerializer):
         read_only_fields = ('pub_date',)
 
 
-class CategorySerializer(serializers.ModelSerializer):
+class CategoryGenreBaseSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        lookup_field = 'slug'
+
+
+class CategorySerializer(CategoryGenreBaseSerializer):
 
     class Meta:
         exclude = ('id',)
         model = Category
-        lookup_field = 'slug'
 
 
-class GenreSerializer(serializers.ModelSerializer):
+class GenreSerializer(CategoryGenreBaseSerializer):
 
     class Meta:
         exclude = ('id',)
         model = Genre
-        lookup_field = 'slug'
 
 
 class TitleSerializerRead(serializers.ModelSerializer):
@@ -121,6 +127,15 @@ class TitleSerializerRead(serializers.ModelSerializer):
 
     class Meta:
         fields = '__all__'
+        read_only_fields = [
+            'id',
+            'category',
+            'genre',
+            'year',
+            'name',
+            'description',
+            'rating'
+        ]
         model = Title
 
 
