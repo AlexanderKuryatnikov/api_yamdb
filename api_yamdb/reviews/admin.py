@@ -7,7 +7,7 @@ from .models import Category, CustomUser, Title
 class CustomUserAdmin(UserAdmin):
     model = CustomUser
     list_display = ('pk', 'username', 'email', 'first_name',
-                    'last_name', 'role', 'confirmation_code')
+                    'last_name', 'role')
     fieldsets = (
         (None, {
             'fields': ('username', 'password', 'email', 'role')

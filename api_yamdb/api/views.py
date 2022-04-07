@@ -97,9 +97,8 @@ def confirmation_code_obtain_view_v2(request):
         serializer = SignUpSerializer(data=request.data)
         serializer.is_valid()
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
     confirmation_code = default_token_generator.make_token(user)
-    user.confirmation_code = confirmation_code
-    user.save()
     send_mail(
         'Cofirmation Code',
         f'{confirmation_code}',

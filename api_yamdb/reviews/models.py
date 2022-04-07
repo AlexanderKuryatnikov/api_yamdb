@@ -35,10 +35,6 @@ class CustomUser(AbstractUser):
     first_name = models.CharField(max_length=150, blank=True)
     last_name = models.CharField(max_length=150, blank=True)
     bio = models.TextField(blank=True)
-    confirmation_code = models.CharField(
-        blank=True,
-        max_length=50,
-    )
 
     @property
     def is_moderator(self):
