@@ -7,7 +7,6 @@ from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from reviews.validators import validate_username
 from reviews.models import (Category, Comments, Genre, Review,
                             Title, User)
-from .fields import CurrentTitleDefault
 
 
 class SignUpSerializer(serializers.ModelSerializer):
