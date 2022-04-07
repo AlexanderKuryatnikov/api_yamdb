@@ -7,7 +7,6 @@ from reviews.models import (Category, Comments, Genre, Review,
                             Title, User)
 from .fields import CurrentTitleDefault
 
-
 class ConfirmationCodeObtainSerializer(serializers.ModelSerializer):
     confirmation_code = serializers.HiddenField(default='')
 
@@ -63,8 +62,7 @@ class ReviewSerializer(serializers.ModelSerializer):
         read_only=True, slug_field='username',
         default=serializers.CurrentUserDefault()
     )
-    title = serializers.HiddenField(
-        default=CurrentTitleDefault())
+    title = serializers.HiddenField(default=True)
 
     class Meta:
         fields = ('id', 'text', 'author', 'score', 'pub_date', 'title')
@@ -76,6 +74,9 @@ class ReviewSerializer(serializers.ModelSerializer):
                 fields=('author', 'title'),
             )
         ]
+
+    def validate_title(self, value):
+        return self.context['request'].parser_context['kwargs']['title_id']
 
 
 class CommentsSerializer(serializers.ModelSerializer):
