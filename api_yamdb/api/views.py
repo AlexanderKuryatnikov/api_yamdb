@@ -1,7 +1,6 @@
 from django.conf import settings
 from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import send_mail
-from django.core.management.utils import get_random_secret_key
 from django.db import IntegrityError
 from django.db.models import Avg
 from django.shortcuts import get_object_or_404
@@ -19,10 +18,8 @@ from reviews.models import Category, Genre, Review, Title, User
 from .filters import TitleFilter
 from .permissions import (AdminOnly, AdminOrReadOnly,
                           AuthorModeratorAdminOrReadOnly)
-from .serializers import (AccessTokenObtainSerializer,
-                          AccessTokenObtainSerializer_v2, CategorySerializer,
+from .serializers import (AccessTokenObtainSerializer, CategorySerializer,
                           CommentsSerializer, ConfirmationCodeObtainSerializer,
-                          ConfirmationCodeObtainSerializer_v2,
                           GenreSerializer, ReviewSerializer, SignUpSerializer,
                           TitleSerializerRead, TitleSerializerWrite,
                           UserSelfSerializer, UserSerializer)
@@ -37,54 +34,10 @@ class CreateListDeleteViewSet(
     pass
 
 
-class ConfirmationCodeObtainView(generics.CreateAPIView):
-    queryset = User.objects.all()
-    serializer_class = ConfirmationCodeObtainSerializer
-    permission_classes = (AllowAny,)
-
-    def create(self, request, *args, **kwargs):
-        email = request.data.get('email')
-        username = request.data.get('username')
-        if User.objects.filter(email=email, username=username):
-            confirmation_code = self.generate_key_and_send_email(email)
-            user = get_object_or_404(User, email=email)
-            user.confirmation_code = confirmation_code
-            user.save()
-            serializer = self.get_serializer(data=request.data)
-            headers = self.get_success_headers(serializer.initial_data)
-            return Response(serializer.initial_data,
-                            status=status.HTTP_200_OK,
-                            headers=headers)
-
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        self.perform_create(serializer)
-        headers = self.get_success_headers(serializer.data)
-        return Response(serializer.data,
-                        status=status.HTTP_200_OK,
-                        headers=headers)
-
-    def perform_create(self, serializer):
-        email = self.request.data.get('email')
-        confirmation_code = self.generate_key_and_send_email(email)
-        serializer.save(confirmation_code=confirmation_code)
-
-    def generate_key_and_send_email(self, email):
-        confirmation_code = get_random_secret_key()
-        send_mail(
-            'Cofirmation Code',
-            f'{confirmation_code}',
-            'yamdb@example.com',
-            [f'{email}'],
-            fail_silently=False,
-        )
-        return confirmation_code
-
-
 @api_view(['POST'])
 @permission_classes([AllowAny])
-def confirmation_code_obtain_view_v2(request):
-    serializer = ConfirmationCodeObtainSerializer_v2(data=request.data)
+def confirmation_code_obtain_view(request):
+    serializer = ConfirmationCodeObtainSerializer(data=request.data)
     if not serializer.is_valid():
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     email = serializer.validated_data.get('email')
@@ -111,11 +64,6 @@ def confirmation_code_obtain_view_v2(request):
 
 class AccessTokenObtainView(TokenViewBase):
     serializer_class = AccessTokenObtainSerializer
-    permission_classes = (AllowAny,)
-
-
-class AccessTokenObtainView_v2(TokenViewBase):
-    serializer_class = AccessTokenObtainSerializer_v2
     permission_classes = (AllowAny,)
 
     def post(self, request, *args, **kwargs):

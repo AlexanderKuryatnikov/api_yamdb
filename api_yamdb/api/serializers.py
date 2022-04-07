@@ -1,6 +1,6 @@
 from django.contrib.auth.validators import UnicodeUsernameValidator
 from rest_framework import serializers
-from rest_framework.exceptions import NotFound, ValidationError
+from rest_framework.exceptions import NotFound
 from rest_framework.validators import UniqueTogetherValidator
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
@@ -10,14 +10,6 @@ from reviews.models import (Category, Comments, Genre, Review,
 from .fields import CurrentTitleDefault
 
 
-class ConfirmationCodeObtainSerializer(serializers.ModelSerializer):
-    confirmation_code = serializers.HiddenField(default='')
-
-    class Meta:
-        model = User
-        fields = ('email', 'username', 'confirmation_code')
-
-
 class SignUpSerializer(serializers.ModelSerializer):
 
     class Meta:
@@ -25,7 +17,7 @@ class SignUpSerializer(serializers.ModelSerializer):
         fields = ('email', 'username')
 
 
-class ConfirmationCodeObtainSerializer_v2(serializers.Serializer):
+class ConfirmationCodeObtainSerializer(serializers.Serializer):
     email = serializers.EmailField(max_length=254)
     username = serializers.CharField(
         max_length=150,
@@ -34,31 +26,6 @@ class ConfirmationCodeObtainSerializer_v2(serializers.Serializer):
 
 
 class AccessTokenObtainSerializer(TokenObtainPairSerializer):
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-        self.fields[self.username_field] = serializers.CharField()
-        self.fields['confirmation_code'] = serializers.CharField()
-        self.fields['password'].required = False
-
-    def validate(self, data):
-        user = User.objects.filter(username=data.get('username')).first()
-        if user is None:
-            raise NotFound('User not found')
-        if user.confirmation_code != data.get('confirmation_code'):
-            raise ValidationError('Invalid confirmation code')
-        token = self.get_token(user).access_token
-        return{'token': str(token)}
-
-    @classmethod
-    def get_token(cls, user):
-        token = super().get_token(user)
-        token['username'] = user.username
-        return token
-
-
-class AccessTokenObtainSerializer_v2(TokenObtainPairSerializer):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
