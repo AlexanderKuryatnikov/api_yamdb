@@ -89,20 +89,24 @@ class CommentsSerializer(serializers.ModelSerializer):
         read_only_fields = ('pub_date',)
 
 
-class CategorySerializer(serializers.ModelSerializer):
+class CategoryGenreBaseSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        lookup_field = 'slug'
+
+
+class CategorySerializer(CategoryGenreBaseSerializer):
 
     class Meta:
         exclude = ('id',)
         model = Category
-        lookup_field = 'slug'
 
 
-class GenreSerializer(serializers.ModelSerializer):
+class GenreSerializer(CategoryGenreBaseSerializer):
 
     class Meta:
         exclude = ('id',)
         model = Genre
-        lookup_field = 'slug'
 
 
 class TitleSerializerRead(serializers.ModelSerializer):
@@ -115,6 +119,15 @@ class TitleSerializerRead(serializers.ModelSerializer):
 
     class Meta:
         fields = '__all__'
+        read_only_fields = [
+            'id',
+            'category',
+            'genre',
+            'year',
+            'name',
+            'description',
+            'rating'
+        ]
         model = Title
 
 
