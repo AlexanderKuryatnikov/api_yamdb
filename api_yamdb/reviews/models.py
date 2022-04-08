@@ -41,16 +41,16 @@ User = get_user_model()
 
 class Genre(models.Model):
     name = models.CharField(max_length=200)
-    slug = models.SlugField(unique=True)
+    slug = models.SlugField(unique=True, db_index=True)
 
 
 class Category(models.Model):
     name = models.CharField(max_length=200)
-    slug = models.SlugField(unique=True)
+    slug = models.SlugField(unique=True, db_index=True)
 
 
 class Title(models.Model):
-    name = models.CharField(max_length=200)
+    name = models.CharField(max_length=200, db_index=True)
     year = models.IntegerField(
         validators=[validate_year]
     )
@@ -59,13 +59,13 @@ class Title(models.Model):
         on_delete=models.SET_NULL,
         related_name='titles',
         null=True
+
     )
     genre = models.ManyToManyField(
         Genre,
         related_name='titles',
-        through='GenreTitle',
     )
-    description = models.CharField(max_length=200)
+    description = models.CharField(max_length=200, blank=True, null=True)
 
 
 class GenreTitle(models.Model):
