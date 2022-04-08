@@ -64,13 +64,9 @@ class Title(models.Model):
     genre = models.ManyToManyField(
         Genre,
         related_name='titles',
+        # through='GenreTitle',
     )
     description = models.CharField(max_length=200, blank=True, null=True)
-
-
-class GenreTitle(models.Model):
-    genre = models.ForeignKey(Genre, on_delete=models.CASCADE)
-    title = models.ForeignKey(Title, on_delete=models.CASCADE)
 
 
 class Review(models.Model):

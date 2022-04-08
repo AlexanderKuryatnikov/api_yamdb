@@ -11,11 +11,10 @@ from reviews.models import (
     Review,
     Title,
     CustomUser,
-    GenreTitle
 )
 
+
 def users_generate(row):
-    lst = []
     user = CustomUser(
         id=row[0],
         username=row[1],
@@ -25,57 +24,38 @@ def users_generate(row):
         first_name=row[5],
         last_name=row[6],
     )
-    lst.append(user)
-    return lst
+    return user
 
 
 def category_generate(row):
-    lst = []
     category = Category(
         id=row[0],
         name=row[1],
         slug=row[2],
     )
-    lst.append(category)
-    return lst
+    return category
 
 
 def genre_generate(row):
-    lst = []
     genre = Genre(
         id=row[0],
         name=row[1],
         slug=row[2],
     )
-    lst.append(genre)
-    return lst
+    return genre
 
 
 def title_generate(row):
-    lst = []
     title = Title(
         id=row[0],
         name=row[1],
         year=row[2],
         category_id=row[3],
     )
-    lst.append(title)
-    return lst
-
-
-def genretitle_generate(row):
-    lst = []
-    genretitle = GenreTitle(
-        id=row[0],
-        genre_id=row[2],
-        title_id=row[1],
-    )
-    lst.append(genretitle)
-    return lst
+    return title
 
 
 def review_generate(row):
-    lst = []
     review = Review(
         id=row[0],
         title_id=row[1],
@@ -84,12 +64,10 @@ def review_generate(row):
         score=row[4],
         pub_date=row[5]
     )
-    lst.append(review)
-    return lst
+    return review
 
 
 def comments_generate(row):
-    lst = []
     comment = Comments(
         id=row[0],
         review_id_id=row[1],
@@ -97,8 +75,7 @@ def comments_generate(row):
         author_id=row[3],
         pub_date=row[4],
     )
-    lst.append(comment)
-    return lst
+    return comment
 
 
 
@@ -107,7 +84,6 @@ MODELS_CSV = {
     Category: ['category.csv', category_generate],
     Genre: ['genre.csv', genre_generate],
     Title: ['titles.csv', title_generate],
-    GenreTitle: ['genre_title.csv', genretitle_generate],
     Review: ['review.csv', review_generate],
     Comments: ['comments.csv', comments_generate],
 }
@@ -123,8 +99,10 @@ class Command(BaseCommand):
                       'r', encoding="utf-8") as csv_file:
                 reader = csv.reader(csv_file)
                 next(reader)
+                lst = []
                 for row in reader:
-                    tables.objects.bulk_create(csv_f[1](row))
+                    lst.append(csv_f[1](row))
+                tables.objects.bulk_create(lst)
         end_time = timezone.now()
         self.stdout.write(
             self.style.SUCCESS(
