@@ -4,9 +4,8 @@ from rest_framework.exceptions import NotFound
 from rest_framework.validators import UniqueTogetherValidator
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
+from reviews.models import Category, Comments, Genre, Review, Title, User
 from reviews.validators import validate_username
-from reviews.models import (Category, Comments, Genre, Review,
-                            Title, User)
 
 
 class SignUpSerializer(serializers.ModelSerializer):
