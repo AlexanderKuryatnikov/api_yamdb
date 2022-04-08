@@ -14,9 +14,9 @@ from reviews.models import (
     GenreTitle
 )
 
-
 def users_generate(row):
-    CustomUser.objects.get_or_create(
+    lst = []
+    user = CustomUser(
         id=row[0],
         username=row[1],
         email=row[2],
@@ -25,43 +25,58 @@ def users_generate(row):
         first_name=row[5],
         last_name=row[6],
     )
+    lst.append(user)
+    return lst
 
 
 def category_generate(row):
-    Category.objects.get_or_create(
+    lst = []
+    category = Category(
         id=row[0],
         name=row[1],
         slug=row[2],
     )
+    lst.append(category)
+    return lst
 
 
 def genre_generate(row):
-    Genre.objects.get_or_create(
+    lst = []
+    genre = Genre(
         id=row[0],
         name=row[1],
         slug=row[2],
     )
+    lst.append(genre)
+    return lst
 
 
 def title_generate(row):
-    Title.objects.get_or_create(
+    lst = []
+    title = Title(
         id=row[0],
         name=row[1],
         year=row[2],
         category_id=row[3],
     )
+    lst.append(title)
+    return lst
 
 
 def genretitle_generate(row):
-    GenreTitle.objects.get_or_create(
+    lst = []
+    genretitle = GenreTitle(
         id=row[0],
         genre_id=row[2],
         title_id=row[1],
     )
+    lst.append(genretitle)
+    return lst
 
 
 def review_generate(row):
-    Review.objects.get_or_create(
+    lst = []
+    review = Review(
         id=row[0],
         title_id=row[1],
         text=row[2],
@@ -69,16 +84,22 @@ def review_generate(row):
         score=row[4],
         pub_date=row[5]
     )
+    lst.append(review)
+    return lst
 
 
 def comments_generate(row):
-    Comments.objects.get_or_create(
+    lst = []
+    comment = Comments(
         id=row[0],
         review_id_id=row[1],
         text=row[2],
         author_id=row[3],
         pub_date=row[4],
     )
+    lst.append(comment)
+    return lst
+
 
 
 MODELS_CSV = {
@@ -103,11 +124,10 @@ class Command(BaseCommand):
                 reader = csv.reader(csv_file)
                 next(reader)
                 for row in reader:
-                    print(row)
-                    csv_f[1](row)
+                    tables.objects.bulk_create(csv_f[1](row))
         end_time = timezone.now()
         self.stdout.write(
             self.style.SUCCESS(
-                f"Loading CSV took: {(end_time - start_time).total_seconds()} seconds."
+                f"Загрузка csv заняла: {(end_time - start_time).total_seconds()} секунд."
             )
         )
