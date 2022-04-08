@@ -1,4 +1,6 @@
+from django.contrib.auth.tokens import default_token_generator
 from django.contrib.auth.validators import UnicodeUsernameValidator
+from django.forms import ValidationError
 from rest_framework import serializers
 from rest_framework.exceptions import NotFound
 from rest_framework.validators import UniqueTogetherValidator
@@ -6,13 +8,6 @@ from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
 from reviews.models import Category, Comments, Genre, Review, Title, User
 from reviews.validators import validate_username
-
-
-class SignUpSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = User
-        fields = ('email', 'username')
 
 
 class ConfirmationCodeObtainSerializer(serializers.Serializer):
@@ -36,6 +31,9 @@ class AccessTokenObtainSerializer(TokenObtainPairSerializer):
         user = User.objects.filter(username=data.get('username')).first()
         if user is None:
             raise NotFound('Пользователь не найден')
+        confirmation_code = data.get('confirmation_code')
+        if not default_token_generator.check_token(user, confirmation_code):
+            raise ValidationError('Неверный код подтверждения')
         token = self.get_token(user).access_token
         return {'token': str(token)}
 
