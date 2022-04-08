@@ -1,18 +1,26 @@
+from django.contrib.auth.validators import UnicodeUsernameValidator
 from rest_framework import serializers
-from rest_framework.exceptions import NotFound, ValidationError
+from rest_framework.exceptions import NotFound
 from rest_framework.validators import UniqueTogetherValidator
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
-from reviews.models import (Category, Comments, Genre, Review,
-                            Title, User)
-from .fields import CurrentTitleDefault
+from reviews.models import Category, Comments, Genre, Review, Title, User
+from reviews.validators import validate_username
 
-class ConfirmationCodeObtainSerializer(serializers.ModelSerializer):
-    confirmation_code = serializers.HiddenField(default='')
+
+class SignUpSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ('email', 'username', 'confirmation_code')
+        fields = ('email', 'username')
+
+
+class ConfirmationCodeObtainSerializer(serializers.Serializer):
+    email = serializers.EmailField(max_length=254)
+    username = serializers.CharField(
+        max_length=150,
+        validators=[validate_username, UnicodeUsernameValidator()]
+    )
 
 
 class AccessTokenObtainSerializer(TokenObtainPairSerializer):
@@ -27,11 +35,9 @@ class AccessTokenObtainSerializer(TokenObtainPairSerializer):
     def validate(self, data):
         user = User.objects.filter(username=data.get('username')).first()
         if user is None:
-            raise NotFound('User not found')
-        if user.confirmation_code != data.get('confirmation_code'):
-            raise ValidationError('Invalid confirmation code')
+            raise NotFound('Пользователь не найден')
         token = self.get_token(user).access_token
-        return{'token': str(token)}
+        return {'token': str(token)}
 
     @classmethod
     def get_token(cls, user):
