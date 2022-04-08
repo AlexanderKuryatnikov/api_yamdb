@@ -53,7 +53,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('name', models.CharField(max_length=200)),
-                ('slug', models.SlugField(unique=True)),
+                ('slug', models.SlugField(unique=True, db_index=True)),
             ],
         ),
         migrations.CreateModel(
@@ -61,14 +61,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('name', models.CharField(max_length=200)),
-                ('slug', models.SlugField(unique=True)),
-            ],
-        ),
-        migrations.CreateModel(
-            name='GenreTitle',
-            fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('genre', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='reviews.Genre')),
+                ('slug', models.SlugField(unique=True, db_index=True)),
             ],
         ),
         migrations.CreateModel(
@@ -77,9 +70,9 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('name', models.CharField(max_length=200)),
                 ('year', models.IntegerField(validators=[reviews.validators.validate_year])),
-                ('description', models.CharField(max_length=200)),
                 ('category', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='titles', to='reviews.Category')),
-                ('genre', models.ManyToManyField(related_name='titles', through='reviews.GenreTitle', to='reviews.Genre')),
+                ('genre', models.ManyToManyField(related_name='titles', to='reviews.Genre',)),
+                ('description', models.CharField(max_length=200, blank=True, null=True)),
             ],
         ),
         migrations.CreateModel(
@@ -90,13 +83,8 @@ class Migration(migrations.Migration):
                 ('score', models.PositiveSmallIntegerField(validators=[reviews.validators.validate_nums])),
                 ('pub_date', models.DateTimeField(auto_now_add=True, verbose_name='Дата отзыва')),
                 ('author', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='reviews', to=settings.AUTH_USER_MODEL)),
-                ('title_id', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='reviews', to='reviews.Title')),
+                ('title', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='reviews', to='reviews.Title')),
             ],
-        ),
-        migrations.AddField(
-            model_name='genretitle',
-            name='title',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='reviews.Title'),
         ),
         migrations.CreateModel(
             name='Comments',
@@ -105,7 +93,7 @@ class Migration(migrations.Migration):
                 ('text', models.TextField()),
                 ('pub_date', models.DateTimeField(auto_now_add=True, verbose_name='Дата комментария')),
                 ('author', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='comments', to=settings.AUTH_USER_MODEL)),
-                ('review_id', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='comments', to='reviews.Review')),
+                ('review', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='comments', to='reviews.Review')),
             ],
         ),
         migrations.AddConstraint(

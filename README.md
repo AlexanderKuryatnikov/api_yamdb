@@ -37,7 +37,13 @@ pip install -r requirements.txt
 python manage.py migrate
 ```
 
-5. Запустить проект:
+5. Загрузить данные из csv:
+
+```
+python manage.py loadcsv
+```
+
+7. Запустить проект:
 
 ```
 python manage.py runserver
