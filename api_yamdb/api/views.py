@@ -20,7 +20,7 @@ from .permissions import (AdminOnly, AdminOrReadOnly,
                           AuthorModeratorAdminOrReadOnly)
 from .serializers import (AccessTokenObtainSerializer, CategorySerializer,
                           CommentsSerializer, ConfirmationCodeObtainSerializer,
-                          GenreSerializer, ReviewSerializer, SignUpSerializer,
+                          GenreSerializer, ReviewSerializer,
                           TitleSerializerRead, TitleSerializerWrite,
                           UserSelfSerializer, UserSerializer)
 
@@ -38,8 +38,7 @@ class CreateListDeleteViewSet(
 @permission_classes([AllowAny])
 def confirmation_code_obtain_view(request):
     serializer = ConfirmationCodeObtainSerializer(data=request.data)
-    if not serializer.is_valid():
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    serializer.is_valid(raise_exception=True)
     email = serializer.validated_data.get('email')
     username = serializer.validated_data.get('username')
 
@@ -47,9 +46,7 @@ def confirmation_code_obtain_view(request):
         user = User.objects.get_or_create(
             email=email, username=username)[0]
     except IntegrityError:
-        serializer = SignUpSerializer(data=request.data)
-        serializer.is_valid()
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        raise ValidationError({'detail': 'Занято имя или почта'})
 
     confirmation_code = default_token_generator.make_token(user)
     send_mail(
@@ -65,22 +62,6 @@ def confirmation_code_obtain_view(request):
 class AccessTokenObtainView(TokenViewBase):
     serializer_class = AccessTokenObtainSerializer
     permission_classes = (AllowAny,)
-
-    def post(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
-        if not serializer.is_valid():
-            return Response(serializer.errors,
-                            status=status.HTTP_400_BAD_REQUEST)
-        user = get_object_or_404(
-            User,
-            username=request.data.get('username')
-        )
-        confirmation_code = request.data.get('confirmation_code')
-        if not default_token_generator.check_token(user, confirmation_code):
-            raise ValidationError(
-                {'confirmation_code': 'Неверный код подтверждения'}
-            )
-        return Response(serializer.validated_data, status=status.HTTP_200_OK)
 
 
 class UserSelfView(generics.RetrieveUpdateAPIView):
