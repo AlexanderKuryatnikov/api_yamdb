@@ -15,6 +15,10 @@ def validate_year(value):
             f'Год произведения не должен быть больше текущего'
             f' {timezone.now().year}'
         )
+    if value <= 0:
+        raise ValidationError(
+            f'Год не может быть нулевым или меньше нуля'
+        )
 
 
 def validate_username(username):

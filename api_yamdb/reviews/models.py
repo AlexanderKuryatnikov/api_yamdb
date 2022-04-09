@@ -40,12 +40,12 @@ User = get_user_model()
 
 
 class Genre(models.Model):
-    name = models.CharField(max_length=200)
+    name = models.CharField(max_length=256)
     slug = models.SlugField(unique=True, db_index=True)
 
 
 class Category(models.Model):
-    name = models.CharField(max_length=200)
+    name = models.CharField(max_length=256)
     slug = models.SlugField(unique=True, db_index=True)
 
 
@@ -63,10 +63,11 @@ class Title(models.Model):
     )
     genre = models.ManyToManyField(
         Genre,
-        related_name='titles',
-        # through='GenreTitle',
+        related_name='titles'
     )
-    description = models.CharField(max_length=200, blank=True, null=True)
+    description = models.TextField(
+        verbose_name='Описание', blank=True, null=True
+    )
 
 
 class Review(models.Model):
