@@ -4,14 +4,7 @@ from django.conf import settings
 from django.core.management.base import BaseCommand
 from django.utils import timezone
 
-from reviews.models import (
-    Category,
-    Comments,
-    Genre,
-    Review,
-    Title,
-    CustomUser,
-)
+from reviews.models import Category, Comments, CustomUser, Genre, Review, Title
 
 
 def users_generate(row):
@@ -78,7 +71,6 @@ def comments_generate(row):
     return comment
 
 
-
 MODELS_CSV = {
     CustomUser: ['users.csv', users_generate],
     Category: ['category.csv', category_generate],
@@ -96,7 +88,7 @@ class Command(BaseCommand):
         start_time = timezone.now()
         for tables, csv_f in MODELS_CSV.items():
             with open(f'{settings.BASE_DIR}/static/data/{csv_f[0]}',
-                      'r', encoding="utf-8") as csv_file:
+                      'r', encoding='utf-8') as csv_file:
                 reader = csv.reader(csv_file)
                 next(reader)
                 lst = []
@@ -106,6 +98,7 @@ class Command(BaseCommand):
         end_time = timezone.now()
         self.stdout.write(
             self.style.SUCCESS(
-                f"Загрузка csv заняла: {(end_time - start_time).total_seconds()} секунд."
+                'Загрузка csv заняла:'
+                f'{(end_time - start_time).total_seconds()} секунд.'
             )
         )

@@ -5,7 +5,7 @@ from django.utils import timezone
 def validate_nums(value):
     """Проверка диапазона оценки от 1 до 10."""
 
-    if value <= 0 or value >= 11:
+    if not 1 <= value <= 10:
         raise ValidationError(f'оценка {value} должна быть от 1 до 10')
 
 
@@ -23,4 +23,4 @@ def validate_year(value):
 
 def validate_username(username):
     if username == 'me':
-        raise ValidationError('Username "me" is not allowed')
+        raise ValidationError('Использовать имя "me" запрещено')
