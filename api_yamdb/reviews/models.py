@@ -37,11 +37,15 @@ class CustomUser(AbstractUser):
     bio = models.TextField(blank=True)
 
     @property
+    def is_admin(self):
+        return self.is_superuser or self.role == UserRole.ADMIN
+
+    @property
     def is_moderator(self):
         return self.role == UserRole.MODERATOR
 
     def save(self, *args, **kwargs):
-        self.is_staff = self.is_superuser or self.role == UserRole.ADMIN
+        self.is_staff = self.is_admin
         super(CustomUser, self).save(*args, **kwargs)
 
 
